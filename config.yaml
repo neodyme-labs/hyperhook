@@ -1,0 +1,5 @@
+mode: "fuzz"
+tracing:
+  libs:
+    - libc.so.6
+    - somelib
