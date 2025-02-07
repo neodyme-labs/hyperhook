@@ -30,7 +30,7 @@ name = "hyperhook"
 crate_type = ["dylib", "lib"]
 
 [[example]]
-name = "fuzz_example_windows"
+name = "hook_example_windows"
 crate-type = ["cdylib"]
 
 [[example]]
