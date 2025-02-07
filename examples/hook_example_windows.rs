@@ -1,31 +1,18 @@
 #![cfg(windows)]
 use winapi::shared::minwindef;
 use winapi::shared::minwindef::{BOOL, DWORD, HINSTANCE, LPVOID};
-use winapi::um::consoleapi;
-
 extern crate hyperhook;
-use std::arch::asm;
-use std::{mem, panic::catch_unwind, ptr::null_mut};
+use std::mem;
 
 use hyperhook::hooking;
 use hyperhook::misc;
+use hyperhook::modules;
 
-use hyperhook::hooking::get_program_entry_point;
-
-use log::{error, info, trace, warn};
+use log::{error, info};
 use simplelog::*;
 
-const OFFSET_hook_me_1: usize = 0x11900;
+const OFFSET_HOOK_ME: usize = 0x11900;
 type FnHookMe1 = extern "C" fn(i32) -> i32;
-
-fn crash() {
-    unsafe {
-        let _ = catch_unwind(|| {
-            let p: *mut i32 = null_mut();
-            *p = 1;
-        });
-    }
-}
 
 #[inline(never)]
 extern "C" fn hook_me_1_detour(x: i32) -> i32 {
@@ -73,7 +60,7 @@ fn demo_init() {
     )
     .unwrap();
 
-    let module_entry_point = get_program_entry_point();
+    let module_entry_point = modules::get_program_entry_point();
     if module_entry_point.is_none() {
         error!("Could not find module entry point");
         return;
@@ -82,13 +69,13 @@ fn demo_init() {
     let module_entry_point = module_entry_point.unwrap();
 
     println!("Module EP VA: {:016x}", module_entry_point);
-    let to_fuzz_base = hooking::get_main_module_address().unwrap();
-    {
+    let to_fuzz_base = modules::get_main_module_address().unwrap();
+    unsafe {
         let mut hook_manager: std::sync::MutexGuard<'_, hooking::HookManager> =
             hooking::HOOK_MANAGER.lock().unwrap();
         hook_manager.add_raw_detour(
             "hook_me_1",
-            (to_fuzz_base + OFFSET_hook_me_1) as *const (),
+            (to_fuzz_base + OFFSET_HOOK_ME) as *const (),
             hook_me_1_detour as *const (),
         );
         hook_manager.enable_detour("hook_me_1");
