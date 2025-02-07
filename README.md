@@ -22,8 +22,9 @@ It provides essential functionalities such as issuing hypercalls, managing funct
 
 ## Getting Started
 
-We provide [examples](https://github.com/neodyme-labs/hyperhook/examples) for both Windows and Linux.
-There is also a `selffuzz` example for testing purposes.
+We provide [examples](https://github.com/neodyme-labs/hyperhook/tree/main/examples) for both Windows and Linux.
+
+There is also a [selffuzz](https://github.com/neodyme-labs/hyperhook/tree/main/examples/selffuzz) example for testing purposes.
 
 For a detailed setup instructions check out our [blog post](https://neodyme.io/blog/hyperhook).
 
